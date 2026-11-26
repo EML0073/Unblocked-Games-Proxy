@@ -129,7 +129,8 @@ const plugins = () => {
                         status: 502,
                         statusText: "Bad Gateway"
                     };
-                    this.#onError?.(ctx.error);
+                    const failedUrl = ctx.rawrequest?.url?.href ?? ctx.rawrequest?.url ?? ctx.rawrequest?.rawUrl ?? "";
+                    this.#onError?.(ctx.error, failedUrl);
                 });
             }
         },
