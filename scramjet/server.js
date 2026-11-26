@@ -13,7 +13,7 @@ app.use((_req, res, next) => {
     res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
     // Allow embedding on the UNBLOCKEDgames GitHub Pages site.
     res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-    res.setHeader("Content-Security-Policy", "frame-ancestors https://eml0073.github.io");
+    res.setHeader("Content-Security-Policy", "frame-ancestors *");
     // Use CSP as the explicit frame allow-list instead of legacy X-Frame-Options.
     res.removeHeader("X-Frame-Options");
     next();
