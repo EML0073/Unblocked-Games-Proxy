@@ -1,24 +1,35 @@
 import { engine } from "./engine.js";
 import { resolveInput, formatForDisplay } from "./url.js";
+
 const $ = (selector) => document.querySelector(selector);
 const addressBar = $("#address");
-const frames = $("#frames");
 const status = $("#status");
-let addressBarFocused = false;
-addressBar.addEventListener("focus", () => (addressBarFocused = true));
-addressBar.addEventListener("blur", () => (addressBarFocused = false));
 const frame = document.createElement("iframe");
+
 frame.className = "frame frame--active";
-frames.append(frame);
+frame.title = "Proxied website";
+frame.allow = "cross-origin-isolated; fullscreen; autoplay; clipboard-read; clipboard-write";
+frame.referrerPolicy = "no-referrer";
+$("#frames").append(frame);
+
 let session = null;
 let sessionPending = null;
+let addressBarFocused = false;
+let navigationId = 0;
+
 const state = { url: "", loading: false };
 const visited = [];
 let visitedIndex = -1;
+
+const setStatus = (message, type = "info") => {
+    status.textContent = message || "";
+    status.hidden = !message;
+    status.dataset.type = type;
+};
+
 const record = (url) => {
     state.url = url;
-    if (visited[visitedIndex] === url)
-        return;
+    if (visited[visitedIndex] === url) return;
     const existing = visited.lastIndexOf(url, visitedIndex - 1);
     if (existing >= 0) {
         visitedIndex = existing;
@@ -28,126 +39,161 @@ const record = (url) => {
     visited.push(url);
     visitedIndex = visited.length - 1;
 };
+
 const canGoBack = () => visitedIndex > 0;
 const canGoForward = () => visitedIndex >= 0 && visitedIndex < visited.length - 1;
-const goBack = () => {
-    if (!canGoBack())
-        return null;
-    return visited[--visitedIndex] ?? null;
+
+const render = () => {
+    if (!addressBarFocused) {
+        addressBar.value = state.url ? formatForDisplay(state.url) : "";
+    }
+    $("#back").disabled = !canGoBack();
+    $("#forward").disabled = !canGoForward();
+    $("#reload").disabled = !session || state.loading;
+    $("#go").disabled = state.loading;
+    $("#loadingBar").classList.toggle("is-visible", state.loading);
 };
-const goForward = () => {
-    if (!canGoForward())
-        return null;
-    return visited[++visitedIndex] ?? null;
-};
+
 const ensureSession = async () => {
-    if (session)
-        return session;
-    if (sessionPending)
-        return sessionPending;
+    if (session) return session;
+    if (sessionPending) return sessionPending;
+
     sessionPending = engine.createSession(frame, {
-        url: url => {
+        url: (url) => {
             record(url);
             render();
         },
         loading: () => {
             state.loading = true;
+            setStatus("Connecting…");
             render();
         },
         ready: () => {
             state.loading = false;
+            setStatus("");
             render();
         },
-        error: error => {
+        error: (error) => {
             state.loading = false;
-            setStatus(error?.message ?? String(error));
+            const message = error?.message || String(error || "Unknown error");
+            setStatus("The page could not be loaded: " + message, "error");
+            render();
         },
-        escape: url => void navigate(url)
+        escape: (url) => void navigate(url)
     });
+
     try {
         session = await sessionPending;
-    }
-    finally {
+        return session;
+    } finally {
         sessionPending = null;
     }
-    return session;
 };
-const currentSession = () => session;
-const currentUrl = () => state.url;
-const currentTitle = () => state.url;
-const isLoading = () => state.loading;
-const startUrl = () => {
-    return "";
-};
-const searchTemplate = () => {
-    return "https://duckduckgo.com/?q=%s";
-};
+
+const searchTemplate = () => "https://duckduckgo.com/?q=%s";
+
 const navigate = async (input, options = {}) => {
     const { url, kind } = resolveInput(input, searchTemplate());
-    switch (kind) {
-        case "empty":
-            return;
-        case "blocked":
-            setStatus("That address cannot be opened through the proxy.");
-            return;
-        case "external":
-            location.assign(url);
-            return;
-        default: {
-            setStatus("");
-            frame.removeAttribute("srcdoc");
-            await ensureSession();
-            if (options.record === false)
-                state.url = url;
-            else
-                record(url);
-            session.go(url);
-            render();
-        }
-    }
-};
-const render = () => {
-    const url = currentUrl();
-    if (!addressBarFocused)
-        addressBar.value = url ? formatForDisplay(url) : "";
-    $("#back").disabled = !canGoBack();
-    $("#forward").disabled = !canGoForward();
-    $("#reload").disabled = !currentSession();
-    if (isLoading())
-        setStatus("Loading");
-    else if (status.textContent === "Loading")
-        setStatus("");
-};
-const setStatus = (message) => {
-    status.textContent = message ?? "";
-    status.hidden = !message;
-};
-$("#omnibox").addEventListener("submit", event => {
-    event.preventDefault();
-    addressBar.blur();
-    void navigate(addressBar.value);
-});
-$("#back").addEventListener("click", () => {
-    const url = goBack();
-    if (url)
-        void navigate(url, { record: false });
-});
-$("#forward").addEventListener("click", () => {
-    const url = goForward();
-    if (url)
-        void navigate(url, { record: false });
-});
-$("#reload").addEventListener("click", () => currentSession()?.reload());
-addEventListener("keydown", event => {
-    if (!(event.ctrlKey || event.metaKey))
+
+    if (kind === "empty") return;
+    if (kind === "blocked") {
+        setStatus("This address is blocked for security reasons.", "error");
         return;
-    switch (event.key) {
-        case "l":
-            event.preventDefault();
-            addressBar.focus();
-            addressBar.select();
-            break;
+    }
+    if (kind === "external") {
+        location.assign(url);
+        return;
+    }
+
+    const thisNavigation = ++navigationId;
+    state.loading = true;
+    setStatus("Starting proxy…");
+    render();
+
+    try {
+        const activeSession = await ensureSession();
+        if (thisNavigation !== navigationId) return;
+
+        if (options.record === false) {
+            state.url = url;
+        } else {
+            record(url);
+        }
+
+        activeSession.go(url);
+        render();
+    } catch (error) {
+        if (thisNavigation !== navigationId) return;
+        state.loading = false;
+        console.error("Scramjet navigation failed:", error);
+        const message = error?.message || String(error || "Unknown error");
+        setStatus("Proxy startup failed: " + message, "error");
+        render();
+    }
+};
+
+const goBack = () => {
+    if (!canGoBack()) return;
+    const url = visited[--visitedIndex];
+    void navigate(url, { record: false });
+};
+
+const goForward = () => {
+    if (!canGoForward()) return;
+    const url = visited[++visitedIndex];
+    void navigate(url, { record: false });
+};
+
+$("#omnibox").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const value = addressBar.value.trim();
+    addressBar.blur();
+    void navigate(value);
+});
+
+$("#back").addEventListener("click", goBack);
+$("#forward").addEventListener("click", goForward);
+$("#reload").addEventListener("click", () => {
+    if (!session) return;
+    state.loading = true;
+    setStatus("Reloading…");
+    render();
+    try {
+        session.reload();
+    } catch (error) {
+        state.loading = false;
+        setStatus("Reload failed: " + (error?.message || String(error)), "error");
+        render();
     }
 });
+
+$("#home").addEventListener("click", () => {
+    addressBar.value = "";
+    addressBar.focus();
+    addressBar.select();
+});
+
+addressBar.addEventListener("focus", () => {
+    addressBarFocused = true;
+    addressBar.select();
+});
+addressBar.addEventListener("blur", () => {
+    addressBarFocused = false;
+});
+addressBar.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+        addressBar.value = state.url ? formatForDisplay(state.url) : "";
+        addressBar.blur();
+    }
+});
+
+addEventListener("keydown", (event) => {
+    if (!(event.ctrlKey || event.metaKey)) return;
+    if (event.key.toLowerCase() === "l") {
+        event.preventDefault();
+        addressBar.focus();
+        addressBar.select();
+    }
+});
+
 render();
-void navigate(startUrl());
