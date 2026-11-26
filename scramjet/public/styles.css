@@ -79,3 +79,9 @@ button:focus-visible,input:focus-visible { outline:2px solid var(--accent); outl
   .welcome__search button { padding:0 14px; }
 }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+
+/* Website-only embeds launched from catalog webUrl entries. */
+body.embed-mode .browser { display:none !important; }
+body.embed-mode .frames { position:absolute; inset:0; width:100%; height:100%; }
+body.embed-mode .frame { width:100%; height:100%; }
+body.embed-mode .status { display:none !important; }
