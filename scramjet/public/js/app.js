@@ -91,7 +91,7 @@ const ensureSession = async () => {
     }
 };
 
-const searchTemplate = () => "https://duckduckgo.com/?q=%s";
+const searchTemplate = () => "https://www.google.com/search?q=%s";
 
 const navigate = async (input, options = {}) => {
     const { url, kind } = resolveInput(input, searchTemplate());
