@@ -34,6 +34,15 @@ const t = (key) => dictionaries[language][key] || dictionaries.en[key] || key;
 document.documentElement.lang = language;
 document.querySelectorAll("[data-i18n]").forEach((node) => { node.textContent = t(node.dataset.i18n); });
 document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => { node.placeholder = t(node.dataset.i18nPlaceholder); });
+const controlLabels = language === "es"
+  ? { back:"Atrás", forward:"Adelante", reload:"Recargar", home:"Enfocar la barra de direcciones", address:"Buscar o introducir una dirección" }
+  : language === "eu"
+    ? { back:"Atzera", forward:"Aurrera", reload:"Birkargatu", home:"Helbide-barra fokuratu", address:"Bilatu edo helbidea idatzi" }
+    : { back:"Back", forward:"Forward", reload:"Reload", home:"Focus address bar", address:"Search or enter address" };
+for (const [id, label] of Object.entries(controlLabels)) {
+  const element = document.getElementById(id);
+  if (element) { element.setAttribute("aria-label", label); element.title = label; }
+}
 const accent = params.get("accent");
 if (accent && /^#[0-9a-f]{6}$/i.test(accent)) document.documentElement.style.setProperty("--accent", accent);
 if (params.get("theme") === "light") {
