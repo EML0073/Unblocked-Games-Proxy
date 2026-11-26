@@ -59,3 +59,92 @@ button, input { font: inherit; }
   .go-button { padding: 0 8px; }
   .home-button { display: none; }
 }
+
+
+/* Initial proxy welcome/search screen */
+.welcome {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: radial-gradient(ellipse at 50% 42%, #172338 0%, #0b0e14 62%);
+  color: var(--text);
+}
+.welcome[hidden] { display: none; }
+.welcome__content {
+  width: min(100%, 620px);
+  text-align: center;
+  transform: translateY(-4vh);
+}
+.welcome__mark {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 22px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #75b2ff, #4776d5);
+  color: #071323;
+  font-size: 32px;
+  font-weight: 900;
+  box-shadow: 0 8px 30px #548ee944;
+}
+.welcome h1 {
+  margin: 0;
+  font-size: clamp(25px, 4vw, 36px);
+  letter-spacing: -.035em;
+}
+.welcome p {
+  margin: 10px 0 25px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.welcome__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 58px;
+  padding: 7px;
+  border: 1px solid #344158;
+  border-radius: 16px;
+  background: #111925;
+  box-shadow: 0 14px 45px #0005, 0 0 0 4px #6ea8ff0b;
+  transition: border-color .18s, box-shadow .18s;
+}
+.welcome__search:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 14px 45px #0005, 0 0 0 4px #6ea8ff20;
+}
+.welcome__search input {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  padding: 0 13px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 15px;
+}
+.welcome__search input::placeholder { color: #75839a; }
+.welcome__search button {
+  min-height: 42px;
+  padding: 0 22px;
+  border: 1px solid #4779c7;
+  border-radius: 11px;
+  background: #285a9e;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+.welcome__search button:hover { background: #3470c2; }
+@media (max-width: 560px) {
+  .welcome { padding: 18px; }
+  .welcome__search { min-height: 52px; border-radius: 13px; }
+  .welcome__search input { font-size: 13px; padding: 0 8px; }
+  .welcome__search button { padding: 0 14px; }
+}
