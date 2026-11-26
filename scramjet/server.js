@@ -11,6 +11,8 @@ const app = express();
 app.use((_req, res, next) => {
     res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
     res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+    // Allow this public proxy document to be embedded by the isolated GitHub Pages proxy page.
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
     next();
 });
 const require = createRequire(import.meta.url);
