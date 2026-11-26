@@ -4,6 +4,9 @@ import { resolveInput, formatForDisplay } from "./url.js";
 const $ = (selector) => document.querySelector(selector);
 const addressBar = $("#address");
 const status = $("#status");
+const welcome = $("#welcome");
+const welcomeSearch = $("#welcomeSearch");
+const welcomeAddress = $("#welcomeAddress");
 const frame = document.createElement("iframe");
 
 frame.className = "frame frame--active";
@@ -108,6 +111,7 @@ const navigate = async (input, options = {}) => {
 
     const thisNavigation = ++navigationId;
     state.loading = true;
+    welcome.hidden = true;
     setStatus("Starting proxy…");
     render();
 
@@ -126,6 +130,7 @@ const navigate = async (input, options = {}) => {
     } catch (error) {
         if (thisNavigation !== navigationId) return;
         state.loading = false;
+        welcome.hidden = !state.url;
         console.error("Scramjet navigation failed:", error);
         const message = error?.message || String(error || "Unknown error");
         setStatus("Proxy startup failed: " + message, "error");
@@ -144,6 +149,15 @@ const goForward = () => {
     const url = visited[++visitedIndex];
     void navigate(url, { record: false });
 };
+
+welcomeSearch.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const value = welcomeAddress.value.trim();
+    if (!value) return;
+    addressBar.value = value;
+    addressBar.blur();
+    void navigate(value);
+});
 
 $("#omnibox").addEventListener("submit", (event) => {
     event.preventDefault();
