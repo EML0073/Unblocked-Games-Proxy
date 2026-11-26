@@ -46,7 +46,19 @@
     <div id="status" class="status" role="status" aria-live="polite" hidden></div>
   </header>
 
-  <main id="frames" class="frames" aria-label="Web page"></main>
+  <main id="frames" class="frames" aria-label="Web page">
+    <section class="welcome" id="welcome" aria-label="Proxy search">
+      <div class="welcome__content">
+        <div class="welcome__mark" aria-hidden="true">U</div>
+        <h1>Search the web</h1>
+        <p>Enter a website or search for anything.</p>
+        <form class="welcome__search" id="welcomeSearch" role="search">
+          <input id="welcomeAddress" type="text" placeholder="Search or enter a website address" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search or enter a website address">
+          <button type="submit">Search</button>
+        </form>
+      </div>
+    </section>
+  </main>
   <script type="module" src="/js/app.js"></script>
 </body>
 </html>
