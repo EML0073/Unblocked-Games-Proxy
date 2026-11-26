@@ -11,8 +11,11 @@ const app = express();
 app.use((_req, res, next) => {
     res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
     res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-    // Allow this public proxy document to be embedded by the isolated GitHub Pages proxy page.
+    // Allow embedding on the UNBLOCKEDgames GitHub Pages site.
     res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    res.setHeader("Content-Security-Policy", "frame-ancestors https://eml0073.github.io");
+    // Use CSP as the explicit frame allow-list instead of legacy X-Frame-Options.
+    res.removeHeader("X-Frame-Options");
     next();
 });
 const require = createRequire(import.meta.url);
