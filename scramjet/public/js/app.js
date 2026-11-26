@@ -73,10 +73,11 @@ const ensureSession = async () => {
             setStatus("");
             render();
         },
-        error: (error) => {
+        error: (error, failedUrl) => {
             state.loading = false;
             const message = error?.message || String(error || "Unknown error");
-            setStatus("The page could not be loaded: " + message, "error");
+            const target = failedUrl ? " (" + failedUrl + ")" : "";
+            setStatus("The page could not be loaded: " + message + target, "error");
             render();
         },
         escape: (url) => void navigate(url)
