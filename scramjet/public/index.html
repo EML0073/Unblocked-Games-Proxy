@@ -3,59 +3,49 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#10131b">
+  <meta name="theme-color" content="#121212">
   <meta name="robots" content="noindex">
-  <title>UNBLOCKED Proxy</title>
+  <link rel="icon" type="image/svg+xml" href="https://eml0073.github.io/Unblocked-Games/argazkik/UNBLOCKEDgames_favicon.svg">
+  <title>UNBLOCKEDgames - Proxy</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <header class="browser">
     <div class="browser__top">
-      <a class="brand" href="/" aria-label="Proxy home">
-        <span class="brand__mark" aria-hidden="true">U</span>
-        <span class="brand__name">UNBLOCKED<span>PROXY</span></span>
+      <a class="brand" href="https://eml0073.github.io/Unblocked-Games/" aria-label="UNBLOCKEDgames">
+        <img class="brand__logo" src="https://eml0073.github.io/Unblocked-Games/argazkik/UNBLOCKEDgames_logo.svg" alt="UNBLOCKEDgames">
+        <span class="brand__tag" data-i18n="proxyTag">PROXY</span>
       </a>
-      <div class="browser__hint">SCRAMJET ENGINE</div>
+      <span class="browser__hint" data-i18n="engine">SCRAMJET ENGINE</span>
     </div>
-
     <div class="toolbar">
       <div class="toolbar__controls" aria-label="Browser controls">
-        <button class="icon-button" id="back" type="button" aria-label="Back" title="Back" disabled>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
-        </button>
-        <button class="icon-button" id="forward" type="button" aria-label="Forward" title="Forward" disabled>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-        </button>
-        <button class="icon-button" id="reload" type="button" aria-label="Reload" title="Reload" disabled>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9a7 7 0 0 1 11.6-2L20 12M4 12l2.8 5a7 7 0 0 0 11.6-2"/></svg>
-        </button>
+        <button class="icon-button" id="back" type="button" aria-label="Back" title="Back" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+        <button class="icon-button" id="forward" type="button" aria-label="Forward" title="Forward" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="icon-button" id="reload" type="button" aria-label="Reload" title="Reload" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9a7 7 0 0 1 11.6-2L20 12M4 12l2.8 5a7 7 0 0 0 11.6-2"/></svg></button>
       </div>
-
       <form id="omnibox" class="omnibox" role="search">
-        <span class="omnibox__secure" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3"/></svg>
-        </span>
-        <input id="address" type="text" name="address" placeholder="Search or enter a website address" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" aria-label="Search or enter address">
-        <button id="go" class="go-button" type="submit">Go <span aria-hidden="true">↵</span></button>
+        <span class="omnibox__secure" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3"/></svg></span>
+        <input id="address" type="text" name="address" data-i18n-placeholder="addressPlaceholder" placeholder="Search or enter a website address" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" aria-label="Search or enter address">
+        <button id="go" class="go-button" type="submit"><span data-i18n="go">Go</span> <span aria-hidden="true">↵</span></button>
       </form>
-      <button class="icon-button home-button" id="home" type="button" aria-label="Focus address bar" title="Focus address bar">
-        <svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg>
-      </button>
+      <button class="icon-button home-button" id="home" type="button" aria-label="Focus address bar" title="Focus address bar"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg></button>
     </div>
     <div class="loading-track"><div id="loadingBar" class="loading-track__bar"></div></div>
     <div id="status" class="status" role="status" aria-live="polite" hidden></div>
   </header>
-
   <main id="frames" class="frames" aria-label="Web page">
     <section class="welcome" id="welcome" aria-label="Proxy search">
       <div class="welcome__content">
-        <div class="welcome__mark" aria-hidden="true">U</div>
-        <h1>Search the web</h1>
-        <p>Enter a website or search for anything.</p>
+        <img class="welcome__logo" src="https://eml0073.github.io/Unblocked-Games/argazkik/UNBLOCKEDgames_logo.svg" alt="UNBLOCKEDgames">
+        <p class="welcome__eyebrow" data-i18n="welcomeEyebrow">YOUR WEB BROWSER</p>
+        <h1 data-i18n="welcomeTitle">What would you like to explore?</h1>
+        <p class="welcome__description" data-i18n="welcomeDescription">Search the web or enter a website address to get started.</p>
         <form class="welcome__search" id="welcomeSearch" role="search">
-          <input id="welcomeAddress" type="text" placeholder="Search or enter a website address" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search or enter a website address">
-          <button type="submit">Search</button>
+          <input id="welcomeAddress" type="text" data-i18n-placeholder="addressPlaceholder" placeholder="Search or enter a website address" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search or enter address">
+          <button type="submit" data-i18n="search">Search</button>
         </form>
+        <p class="welcome__tip" data-i18n="tip">Tip: press Ctrl + L to focus the address bar</p>
       </div>
     </section>
   </main>
