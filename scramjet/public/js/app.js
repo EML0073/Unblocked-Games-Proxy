@@ -3,6 +3,8 @@ import { resolveInput, formatForDisplay } from "./url.js";
 
 const $ = (selector) => document.querySelector(selector);
 const params = new URLSearchParams(location.search);
+const embedMode = params.get("embed") === "1";
+if (embedMode) document.body.classList.add("embed-mode");
 const language = ["en", "es", "eu"].includes(params.get("lang")) ? params.get("lang") : "en";
 const dictionaries = {
   en: {
@@ -179,3 +181,7 @@ addEventListener("keydown", (event) => {
   if (event.key.toLowerCase() === "l") { event.preventDefault(); addressBar.focus(); addressBar.select(); }
 });
 render();
+if (embedMode) {
+  const initialUrl = params.get("url");
+  if (initialUrl) void navigate(initialUrl);
+}
