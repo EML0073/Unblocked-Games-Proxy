@@ -21,7 +21,7 @@ const isShellRequest = request => {
 	if (url.search) return false;
 	if (location.hostname === "localhost" || location.hostname === "127.0.0.1")
 		return false;
-	if (url.pathname === "/sw.js") return false;
+	if (url.pathname === "/sw.js" || url.pathname === "/healthz") return false;
 	if (runtimeRoots.some(root => isUnderRoot(url.pathname, root)))
 		return false;
 
