@@ -9,16 +9,20 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const staticRoot = path.join(__dirname, "public");
 const app = express();
 app.use((_req, res, next) => {
-    // The proxy is intentionally embeddable in nested frames (including
-    // Google Sites' sandboxed wrapper). COOP/COEP isolation cannot be enabled
-    // by a cross-origin ancestor such as Google Sites and can break embeds.
-    res.removeHeader("Cross-Origin-Opener-Policy");
-    res.removeHeader("Cross-Origin-Embedder-Policy");
-    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-    // Do not send frame restrictions: the proxy must be embeddable by any site.
-    // Removing both headers avoids browser-specific X-Frame-Options/CSP conflicts.
-    res.removeHeader("Content-Security-Policy");
-    res.removeHeader("X-Frame-Options");
+    // Intentionally send no cross-origin isolation, resource isolation, or
+    // frame-embedding restrictions. This allows embedding in nested iframes
+    // (including third-party launchers such as Google Sites).
+    for (const header of [
+        "Cross-Origin-Opener-Policy",
+        "Cross-Origin-Embedder-Policy",
+        "Cross-Origin-Resource-Policy",
+        "Origin-Agent-Cluster",
+        "Content-Security-Policy",
+        "Content-Security-Policy-Report-Only",
+        "X-Frame-Options"
+    ]) {
+        res.removeHeader(header);
+    }
     next();
 });
 const require = createRequire(import.meta.url);
