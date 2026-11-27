@@ -9,9 +9,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const staticRoot = path.join(__dirname, "public");
 const app = express();
 app.use((_req, res, next) => {
-    res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-    res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-    // Allow embedding on the UNBLOCKEDgames GitHub Pages site.
+    // The proxy is intentionally embeddable in nested frames (including
+    // Google Sites' sandboxed wrapper). COOP/COEP isolation cannot be enabled
+    // by a cross-origin ancestor such as Google Sites and can break embeds.
+    res.removeHeader("Cross-Origin-Opener-Policy");
+    res.removeHeader("Cross-Origin-Embedder-Policy");
     res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
     // Do not send frame restrictions: the proxy must be embeddable by any site.
     // Removing both headers avoids browser-specific X-Frame-Options/CSP conflicts.
