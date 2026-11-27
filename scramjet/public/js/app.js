@@ -180,6 +180,23 @@ addEventListener("keydown", (event) => {
   if (!(event.ctrlKey || event.metaKey)) return;
   if (event.key.toLowerCase() === "l") { event.preventDefault(); addressBar.focus(); addressBar.select(); }
 });
+// Keep a free Render instance awake while this browser is open. The
+// query string prevents the service worker's shell cache from storing it.
+const pingProxy = () => {
+  if (document.visibilityState === "hidden") return;
+  fetch("/healthz?keepalive=" + Date.now(), {
+    method: "GET",
+    cache: "no-store",
+    credentials: "same-origin"
+  }).catch(() => {});
+};
+pingProxy();
+const proxyKeepAlive = setInterval(pingProxy, 4 * 60 * 1000);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") pingProxy();
+});
+addEventListener("pagehide", () => clearInterval(proxyKeepAlive), { once: true });
+
 render();
 if (embedMode) {
   const initialUrl = params.get("url");
