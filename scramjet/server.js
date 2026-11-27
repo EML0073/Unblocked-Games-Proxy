@@ -57,7 +57,12 @@ server.on("upgrade", (req, socket, head) => {
     const wispPath = new URL(req.url ?? "/", "http://localhost").pathname;
     if (wispPath === "/wisp/") {
         req.url = wispPath;
-        wisp.routeRequest(req, socket, head);
+        try {
+            wisp.routeRequest(req, socket, head);
+        } catch (error) {
+            console.error("Wisp upgrade failed:", error);
+            socket.destroy();
+        }
         return;
     }
     socket.end();
