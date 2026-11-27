@@ -25,6 +25,17 @@ app.use("/scram/", express.static(scramjetPath));
 app.use("/utils/", express.static(dirOf("@mercuryworkshop/scramjet-utils")));
 app.use("/controller/", express.static(dirOf("@mercuryworkshop/scramjet-controller")));
 app.use("/libcurl/", express.static(dirOf("@mercuryworkshop/libcurl-transport")));
+
+// Lightweight endpoint for Render health checks and uptime monitors.
+app.get("/healthz", (_req, res) => {
+    res.setHeader("Cache-Control", "no-store");
+    res.status(200).json({
+        status: "ok",
+        uptime: Math.floor(process.uptime()),
+        timestamp: new Date().toISOString()
+    });
+});
+
 app.use(express.static(staticRoot, {
     setHeaders(res, filePath) {
         if (path.basename(filePath).endsWith("sw.js")) {
@@ -66,7 +77,13 @@ const listenWithFallback = (target, startPort, attempts = 20) => {
             : `My Minimal Proxy listening on http://localhost:${port}`);
     });
 };
-const port = Number(process.env.PORT) || Number("8080");
+// Keep upgraded WebSocket connections (Wisp) alive; they carry proxied traffic.
+server.timeout = 0;
+server.keepAliveTimeout = 65000;
+server.headersTimeout = 66000;
+server.requestTimeout = 300000;
+
+const port = Number(process.env.PORT) || 8080;
 listenWithFallback(server, port);
 for (const signal of ["SIGINT", "SIGTERM"]) {
     process.on(signal, () => server.close(() => process.exit(0)));
