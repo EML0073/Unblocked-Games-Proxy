@@ -9,13 +9,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const staticRoot = path.join(__dirname, "public");
 const app = express();
 app.use((_req, res, next) => {
-    // Intentionally send no cross-origin isolation, resource isolation, or
-    // frame-embedding restrictions. This allows embedding in nested iframes
-    // (including third-party launchers such as Google Sites).
+    // Keep the proxy embeddable by arbitrary parent pages. In particular,
+    // UNBLOCKEDgames' proxy.html uses COEP: require-corp, so this response
+    // must explicitly opt in to cross-origin embedding as a resource.
+    res.removeHeader("Cross-Origin-Opener-Policy");
+    res.removeHeader("Cross-Origin-Embedder-Policy");
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+
+    // Do not restrict which sites may frame this proxy.
     for (const header of [
-        "Cross-Origin-Opener-Policy",
-        "Cross-Origin-Embedder-Policy",
-        "Cross-Origin-Resource-Policy",
         "Origin-Agent-Cluster",
         "Content-Security-Policy",
         "Content-Security-Policy-Report-Only",
