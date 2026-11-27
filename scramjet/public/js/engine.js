@@ -211,7 +211,15 @@ export const engine = {
     label: "Scramjet",
     supportsTransportSwitch: false,
     async init() {
-        ready ??= boot();
+        // Do not keep a rejected boot promise: transient network/script/SW
+        // failures must be recoverable on the next navigation attempt.
+        if (!ready) {
+            ready = boot().catch((error) => {
+                ready = null;
+                controller = null;
+                throw error;
+            });
+        }
         return ready;
     },
     async createSession(element, handlers = {}) {
